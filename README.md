@@ -7,4 +7,4 @@ Cpp Tray 기능 예제입니다.
 3. 우클릭 시 메뉴가 뜨고 Open 버튼을 눌렀을 때 다이얼로그가 열린다. Close 버튼을 클릭하면 다이얼로그가 종료된다.
 
 ### 💻 설명 블로그
-[소연의 개발일지](https://giveme-happyending.tistory.com/241#article-3--%EC%98%88%EC%A0%9C-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8:-tray-%EA%B5%AC%ED%98%84%ED%95%B4%EB%B3%B4%EA%B8%B0)
+[소연의 개발일지](https://giveme-happyending.tistory.com/241)
