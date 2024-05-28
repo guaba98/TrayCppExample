@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#define WM_TRAYICON_MSG WM_USER + 1 
 
 // CTrayCppExampleDlg 대화 상자
 class CTrayCppExampleDlg : public CDialogEx
@@ -31,4 +31,17 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
+	// 트레이 관련 변수 선언
+	NOTIFYICONDATA  nid;
+
+	// 트레이 관련 함수 선언
+	BOOL m_bTray = FALSE;		// 트레이 생성 flag
+	void InitTray();			// 트레이 생성
+	void OnExit();				// 프로그램 종료
+	void OnTrayPopupClose();	// 트레이 Open
+	void OnTrayPopupOpen();		// 트레이 Close
+	LRESULT OnTrayNotify(WPARAM wParam, LPARAM lParam);	
+
 };
+

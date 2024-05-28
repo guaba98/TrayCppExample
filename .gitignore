@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+TrayCppExample/ipch
+TrayCppExample/TrayCppExample/x64
+TrayCppExample/x64

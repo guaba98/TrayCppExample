@@ -62,6 +62,11 @@ void CTrayCppExampleDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CTrayCppExampleDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
+
+	ON_MESSAGE(WM_TRAYICON_MSG, OnTrayNotify)
+	ON_COMMAND(ID_MENU_CLOSE, &CTrayCppExampleDlg::OnTrayPopupClose)
+	ON_COMMAND(ID_MENU_OPEN, &CTrayCppExampleDlg::OnTrayPopupOpen)
+
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 END_MESSAGE_MAP()
@@ -99,7 +104,7 @@ BOOL CTrayCppExampleDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-
+	InitTray();
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -110,6 +115,13 @@ void CTrayCppExampleDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		CAboutDlg dlgAbout;
 		dlgAbout.DoModal();
 	}
+
+	if (nID == SC_CLOSE)
+	{
+		Shell_NotifyIcon(NIM_ADD, &nid);
+		ShowWindow(SW_HIDE);
+	}
+
 	else
 	{
 		CDialogEx::OnSysCommand(nID, lParam);
@@ -152,3 +164,80 @@ HCURSOR CTrayCppExampleDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+void CTrayCppExampleDlg::InitTray()
+{
+	nid.cbSize = sizeof(nid);
+	nid.hWnd = GetSafeHwnd();
+	nid.uID = 0;
+	nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
+	nid.hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);	//아이콘 변경 필요시 여기서 변경
+	lstrcpy(nid.szTip, TEXT("View DBAgent program"));
+	nid.uCallbackMessage = WM_TRAYICON_MSG;
+}
+
+void CTrayCppExampleDlg::OnExit()
+{
+	Shell_NotifyIcon(NIM_DELETE, &nid); //종료시 삭제작업을 해줘야 바로 아이콘이 사라진다.
+
+	DestroyWindow();
+}
+
+
+LRESULT CTrayCppExampleDlg::OnTrayNotify(WPARAM wParam, LPARAM lParam)
+{
+	switch (lParam) 
+	{
+		case WM_LBUTTONDBLCLK:	// 더블클릭했을 때
+			{
+				ShowWindow(SW_SHOW);					// 창 띄우기
+				Shell_NotifyIcon(NIM_DELETE, &nid);		// TRAY 삭제
+			}
+			break;
+		case WM_RBUTTONUP:	// 오른쪽 마우스 클릭했을 때
+			{
+				SetForegroundWindow();
+
+				CPoint ptMouse;
+				::GetCursorPos(&ptMouse);
+
+				CMenu menu;
+				menu.LoadMenu(IDR_MENU_TRAY);	// 메뉴 띄우기
+				CMenu *pMenu = menu.GetSubMenu(0);
+				pMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, ptMouse.x, ptMouse.y, AfxGetMainWnd());
+			}
+			break;
+	}
+	return TRUE;
+}
+
+void CTrayCppExampleDlg::OnTrayPopupClose()
+{
+	CString strMessage;
+	strMessage.Format(_T("정말 프로그램을 종료하시겠습니까?"));
+	if (AfxMessageBox(strMessage, MB_YESNO) == IDNO) {
+		return;
+	}
+
+	if (m_bTray == TRUE) {
+		Shell_NotifyIcon(NIM_DELETE, &nid);
+		m_bTray = FALSE;
+		OnExit();
+
+	}
+
+	//m_bExit = TRUE;
+	AfxGetMainWnd()->PostMessage(WM_CLOSE);
+}
+
+
+void CTrayCppExampleDlg::OnTrayPopupOpen()
+{
+	if (m_bTray == TRUE) {
+		m_bTray = FALSE;
+		Shell_NotifyIcon(NIM_DELETE, &nid);
+	}
+
+	ShowWindow(SW_SHOW);
+	::SetWindowPos(AfxGetMainWnd()->m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+}
