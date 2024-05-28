@@ -33,10 +33,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	// 트레이 관련 변수 선언
-	NOTIFYICONDATA  nid;
+	NOTIFYICONDATA  nid;		// 트레이 객체
+	BOOL m_bTray = FALSE;		// 트레이 생성 flag
 
 	// 트레이 관련 함수 선언
-	BOOL m_bTray = FALSE;		// 트레이 생성 flag
 	void InitTray();			// 트레이 생성
 	void OnExit();				// 프로그램 종료
 	void OnTrayPopupClose();	// 트레이 Open
